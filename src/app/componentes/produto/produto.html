@@ -1,5 +1,9 @@
 <div class="produto">
-<h2>{{ nome }}</h2>
-<p>Preço: R$ {{ preco }}</p>
+ @for (item of produtos; track item) {
+<h2>{{ item.nome | captalize }}</h2>
+@if(mostrarpreco){
+<p>Preço: R$ {{ item.preco | precoFormatado: 'BRL' }}</p>
+}
+}
 <p>COISA NOVA</p>
 </div>
