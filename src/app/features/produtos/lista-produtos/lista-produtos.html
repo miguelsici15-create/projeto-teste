@@ -1,3 +1,5 @@
+<section>
+
 <h2>Total de produtos: {{ totalProdutos() }}</h2>
 <h3>Valor total: {{ valorTotal() | currency }} </h3>
 <h3>
@@ -17,7 +19,11 @@ Produto selecionado:
         >
     </app-produto>
 
+    <button (click)="adicionarAoCarrinho(item)">
+Adicionar ao Carrinho
+</button>
 }
+
 
 
 
@@ -27,3 +33,16 @@ Produto selecionado:
 <button (click)="subistuirProdutos()">
 Substituir Lista
 </button>
+</section>
+
+<hr>
+<section>
+
+<h2>Carrinho:</h2>
+@for (item of carrinho(); track $index){
+    <p>{{ item.nome }} - {{ item.preco |currency: "BRL"}}</p>
+}
+
+<p><strong>Itens no Carrinho:</strong> {{quantidadeCarrinho ()}}</p>
+<p><strong>Total do Carrinho: {{ totalCarrinho () | currency: "BRL"}}</strong></p>
+</section>

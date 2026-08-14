@@ -23,17 +23,12 @@ effect(() => {
   }
 })
 }
-
-
-
-
   produtos = signal<
     {
       nome: string;
       preco: number;
     }[]
   >([]);
-
   produtosSelecionado = signal <string | null>(null);
 
 totalProdutos = computed(() => this.produtos().length);
@@ -89,9 +84,20 @@ this.produtos.set([
       /* Caso contrario, não faço nada */
     }
   }
+  
 
   exibirProduto(nome: string) {
     this.produtosSelecionado.set(nome);
     console.log('Produto selecionado é ' + nome);
   }
-}
+  carrinho = signal<{ nome: string; preco: number }[]>([]);
+  quantidadeCarrinho = computed(()=> this.carrinho().length);
+
+totalCarrinho = computed(() => 
+this.carrinho().reduce((total, item) => total + item.preco, 0))
+
+adicionarAoCarrinho (produto:{nome: string, preco: number}) {
+this.carrinho.update((listaCarrinhoAtual) => [...listaCarrinhoAtual, produto]);
+  }
+};
+
