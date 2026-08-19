@@ -5,6 +5,9 @@
     <a routerLink="produtos">Produtos</a> |
     <a routerLink="carrinho">Carrinho</a>
 </nav>
+<button (click) ="login()">Logar</button>
+<button (click)="logout()">Deslogar</button>
+<p>Meu usuario esta: {{ usuarioLogado() }}</p>
 </header>
 <hr>
 

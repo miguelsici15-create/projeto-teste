@@ -1,6 +1,7 @@
 import { Component, signal, computed, effect } from '@angular/core';
 import { Produto } from '../produto/produto';
 import { CurrencyPipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-lista-produtos',
@@ -10,7 +11,8 @@ import { CurrencyPipe } from '@angular/common';
 })
 
 export class ListaProdutos {
-constructor(){
+constructor(private http: HttpClient) {
+  this.carregarProdutos();
   effect (() => {
     console.log('lista de produtos alterada', this.produtos());
   })
@@ -23,6 +25,7 @@ effect(() => {
   }
 })
 }
+carregando = signal(true);
   produtos = signal<
     {
       nome: string;
@@ -49,6 +52,31 @@ this.produtos.set([
     { nome: 'mouse', preco: 150 },
     { nome: 'teclado', preco: 250.55 },
   ];
+
+  carregarProdutos(){
+    this.carregando.set(true);
+
+    this.http.get<{title: string, price: number; image: string}[]>(
+      'https://fakestoreapi.com/products',
+    ).subscribe({
+      next: (dados) => {
+
+// Adaptação da API para o nosso projeto
+const produtosFormatados = dados.map(p => ({
+nome: p.title,
+preco: p.price
+}));
+
+this.produtos.set(produtosFormatados);
+this.carregando.set(false); // finaliza loading
+},
+
+error: (erro) => {
+console.error('Erro ao carregar produtos:', erro);
+this.carregando.set(false); // evita loading infinito
+}
+  });
+}
 
   filtrarNovoProduto() {
     /* Esta função irá filtar a lista atual de produtos 

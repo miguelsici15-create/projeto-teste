@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { Produto } from './features/produtos/produto/produto'; 
 import { ListaProdutos } from './features/produtos/lista-produtos/lista-produtos';
+import { usuarioLogado, login, logout } from './core/auth';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,7 @@ import { ListaProdutos } from './features/produtos/lista-produtos/lista-produtos
 })
 export class App {
   protected readonly title = signal('projeto-teste');
+  usuarioLogado = usuarioLogado
+  login = login;
+  logout = logout
 }
