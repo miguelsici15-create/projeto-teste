@@ -1,14 +1,29 @@
-<header><h1>Loja Rubro-Negresco</h1>
+<!-- <header><h1>Loja</h1>
 
 <nav>
     <a routerLink="">Home</a> |
     <a routerLink="produtos">Produtos</a> |
     <a routerLink="carrinho">Carrinho</a>
-</nav>
-<button (click) ="login()">Logar</button>
+</nav> -->
+
+<app-header><main style="padding: 20px">
+<!-- CONTROLES TEMPORÁRIOS DE LOGIN -->
+<section style="margin-bottom: 20px">
+<button (click)="login()">Login</button>
+<button (click)="logout()">Logout</button>
+
+<p>Status: {{ usuarioLogado() ? 'Logado' : 'Deslogado' }}</p>
+</section>
+
+<hr />
+
+<!-- CONTEÚDO DINÂMICO DAS ROTAS -->
+<router-outlet></router-outlet>
+</main></app-header>
+<button (click) ="login()">Logar</button> |
 <button (click)="logout()">Deslogar</button>
 <p>Meu usuario esta: {{ usuarioLogado() }}</p>
-</header>
+<!-- </header> -->
 <hr>
 
 <router-outlet></router-outlet>

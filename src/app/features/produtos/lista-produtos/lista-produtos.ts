@@ -156,3 +156,4 @@ this.carrinho.update((listaCarrinhoAtual) => [...listaCarrinhoAtual, produto]);
   }
 };
 
+
