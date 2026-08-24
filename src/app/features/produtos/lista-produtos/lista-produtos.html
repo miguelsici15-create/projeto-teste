@@ -1,3 +1,20 @@
+@if (carregando()) {
+<p>Carregando produtos...</p>
+}
+
+@if (error()) {
+<p style="color: rgb(252, 252, 252)">
+{{ error() }}
+</p>
+<button (click)="carregarProdutos()">Tentar novamente</button>
+}
+
+@if (!carregando() && !error()) {
+}
+
+
+
+
 <section>
 
 <h2>Total de produtos: {{ totalProdutos() }}</h2>
@@ -19,7 +36,7 @@ Produto selecionado:
         >
     </app-produto>
 
-    <button (click)="adicionarAoCarrinho(item)">
+    <button mat-rise-button (click)="adicionarAoCarrinho(item)">
 Adicionar ao Carrinho
 </button>
 }

@@ -1,17 +1,22 @@
-import { Component, signal, computed, effect } from '@angular/core';
+import { Component, signal, computed, effect, inject } from '@angular/core';
 import { Produto } from '../produto/produto';
 import { CurrencyPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { ProdutosService } from '../produtos.services';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+
+
+type ProdutoType = { nome: string; preco: number }
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [Produto, CurrencyPipe],
+  imports: [Produto, CurrencyPipe, MatButtonModule, MatCardModule],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.css',
 })
 
 export class ListaProdutos {
-constructor(private http: HttpClient) {
+constructor() {
   this.carregarProdutos();
   effect (() => {
     console.log('lista de produtos alterada', this.produtos());
@@ -25,7 +30,9 @@ effect(() => {
   }
 })
 }
+private produtosService = inject(ProdutosService);
 carregando = signal(true);
+error = signal<string | null>(null);
   produtos = signal<
     {
       nome: string;
@@ -54,29 +61,49 @@ this.produtos.set([
   ];
 
   carregarProdutos(){
-    this.carregando.set(true);
+    this.error.set(null);
 
-    this.http.get<{title: string, price: number; image: string}[]>(
-      'https://fakestoreapi.com/products',
-    ).subscribe({
-      next: (dados) => {
+this.carregando.set(true);
 
-// Adaptação da API para o nosso projeto
-const produtosFormatados = dados.map(p => ({
-nome: p.title,
-preco: p.price
-}));
-
-this.produtos.set(produtosFormatados);
-this.carregando.set(false); // finaliza loading
+this.produtosService.buscarProdutos()
+.subscribe({
+next: (dados) => {
+const produtos = this.produtosService
+.transformarProdutos(dados);
+this.produtos.set(produtos);
+this.carregando.set(false);
 },
-
 error: (erro) => {
 console.error('Erro ao carregar produtos:', erro);
-this.carregando.set(false); // evita loading infinito
+this.error.set('Erro ao carregar produtos. Verifique sua conexão e tente novamente.');
+this.carregando.set(false);
 }
-  });
+});
+
 }
+
+
+//     this.http.get<{title: string, price: number; image: string}[]>(
+//       'https://fakestoreapi.com/products',
+//     ).subscribe({
+//       next: (dados) => {
+
+// // Adaptação da API para o nosso projeto
+// const produtosFormatados = dados.map(p => ({
+// nome: p.title,
+// preco: p.price
+// }));
+
+// this.produtos.set(produtosFormatados);
+// this.carregando.set(false); // finaliza loading
+// },
+
+// error: (erro) => {
+// console.error('Erro ao carregar produtos:', erro);
+// this.carregando.set(false); // evita loading infinito
+// }
+//   });
+
 
   filtrarNovoProduto() {
     /* Esta função irá filtar a lista atual de produtos 
@@ -118,7 +145,7 @@ this.carregando.set(false); // evita loading infinito
     this.produtosSelecionado.set(nome);
     console.log('Produto selecionado é ' + nome);
   }
-  carrinho = signal<{ nome: string; preco: number }[]>([]);
+  carrinho = signal<ProdutoType[]>([]);
   quantidadeCarrinho = computed(()=> this.carrinho().length);
 
 totalCarrinho = computed(() => 
