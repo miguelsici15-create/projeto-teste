@@ -1,6 +1,4 @@
-a {
-    margin: 3px;
-}
+
 nav a:hover {
     color: rgb(0, 0, 0);
 }
@@ -10,4 +8,20 @@ nav a:hover {
 
 header {
     background-color: rgb(255, 255, 255);
+}
+
+.container-principal {
+padding: 16px;
+max-width: 1200px;
+margin: 0 auto;
+}
+
+.bloco-controle {
+margin-bottom: 16px;
+}
+
+.grid-produtos {
+display: grid;
+grid-template-columns: 2fr;
+gap: 16px;
 }

@@ -5,26 +5,14 @@
     <a routerLink="produtos">Produtos</a> |
     <a routerLink="carrinho">Carrinho</a>
 </nav> -->
+<app-header></app-header>
 
-<app-header><main style="padding: 20px">
+<main class="container-principal">
 <!-- CONTROLES TEMPORÁRIOS DE LOGIN -->
-<section style="margin-bottom: 20px">
+<section class="bloco-controle">
 <button (click)="login()">Login</button>
 <button (click)="logout()">Logout</button>
-
 <p>Status: {{ usuarioLogado() ? 'Logado' : 'Deslogado' }}</p>
 </section>
-
-<hr />
-
-<!-- CONTEÚDO DINÂMICO DAS ROTAS -->
-<router-outlet></router-outlet>
-</main></app-header>
-<button (click) ="login()">Logar</button> |
-<button (click)="logout()">Deslogar</button>
-<p>Meu usuario esta: {{ usuarioLogado() }}</p>
-<!-- </header> -->
-<hr>
-
 <router-outlet></router-outlet>
 <!-- <app-produto></app-produto> -->

@@ -1,10 +1,16 @@
-button{
-    margin: 8px;
-    padding: 6px;
-}
+
 
 h2 {
     color: rgb(0, 0, 0);
 }
 
-
+@media (min-width: 600px) {
+.grid-produtos {
+grid-template-columns: repeat(2, 1fr);
+}
+}
+@media (min-width: 900px) {
+.grid-produtos {
+grid-template-columns: repeat(3, 1fr);
+}
+}
