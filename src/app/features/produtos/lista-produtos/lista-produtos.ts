@@ -1,7 +1,7 @@
 import { Component, signal, computed, effect, inject } from '@angular/core';
 import { Produto } from '../produto/produto';
 import { CurrencyPipe } from '@angular/common';
-import { ProdutosService } from '../produtos.services';
+import { ProdutosService } from '../../../core/services/produtos.services';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
