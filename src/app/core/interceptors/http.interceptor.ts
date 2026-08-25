@@ -1,35 +1,38 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { tap, catchError, throwError } from 'rxjs';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
-    // TOKEN
-const token = 'fake-jwt-token';
-const novaReq = req.clone({
-setHeaders: {
-Authorization: `Bearer ${token}`
-},
-});
+  //Token
+  const token = 'fake-jwt-token';
+  const novaReq = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-console.log('Interceptando requisição:', req.url);
-// SEGUE COM A NOVA REQUEST + LOG RESPONSE
-return next(novaReq).pipe(
-tap({
-next: (event) => console.log('RESPONSE:', event),
-error: (error) => console.error('ERRO:', error)
-}),
+  console.log('Interceptando requisição:', req.url);
+  return next(novaReq).pipe(
+    tap({
+      next: (event) => {
+        console.log('RESPONSE:', event);
+      },
+      error: (error) => {
+        console.log('ERROR:', error);
+      },
+    }),
+    catchError((error) => {
+      console.log('ERROR GLOBAL:', error);
 
-catchError((error) => {
-
-console.error('ERRO GLOBAL:', error);
-if (error.status === 401) {
-console.warn('Não autorizado!');
-}
-
-if (error.status === 500) {
-console.warn('Erro interno do servidor!');
-}
-
-return throwError(() => error);
-}),
-);
+      if (error.status === 401) {
+        console.warn('Não Autorizado');
+      }
+      if (error.status === 404) {
+        console.warn('Conteudo não encontrado!');
+      }
+      if (error.status === 500) {
+        console.warn('Error do servidor!');
+      }
+      return throwError(() => error);
+    }),
+  );
 };

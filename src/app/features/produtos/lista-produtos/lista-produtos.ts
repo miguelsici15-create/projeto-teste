@@ -3,56 +3,43 @@ import { Produto } from '../produto/produto';
 import { CurrencyPipe } from '@angular/common';
 import { ProdutosService } from '../../../core/services/produtos.services';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { CarrinhoService } from '../../../core/services/carrinho.services';
 
-
-type ProdutoType = { nome: string; preco: number }
+type ProdutoType = { nome: string; preco: number };
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [Produto, CurrencyPipe, MatButtonModule, MatCardModule],
+  imports: [Produto, CurrencyPipe, MatButtonModule],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.css',
 })
-
 export class ListaProdutos {
-constructor() {
-  this.carregarProdutos();
-  effect (() => {
-    console.log('lista de produtos alterada', this.produtos());
-  })
-  effect(()=> {
-    console.log('O valor atualizado:', this.valorTotal());
-  })
-effect(() => {
-  if(typeof document !== 'undefined'){
-    document.title = `(${this.totalProdutos()}) Minha loja`;
+  constructor() {
+    this.carregarProdutos();
+
+    effect(() => {
+      console.log('A lista de produtos foi alterada: ', this.produtos());
+    });
+    effect(() => {
+      console.log('O valor atualizado: ', this.valorTotal());
+    });
+    effect(() => {
+      document.title = `(${this.totalProdutos()}) da Minha Loja`;
+    });
   }
-})
-}
-private produtosService = inject(ProdutosService);
-carregando = signal(true);
-error = signal<string | null>(null);
-  produtos = signal<
-    {
-      nome: string;
-      preco: number;
-    }[]
-  >([]);
-  produtosSelecionado = signal <string | null>(null);
+  private produtosService = inject(ProdutosService);
+  carrinhoService = inject(CarrinhoService)
+  carregando = signal(true);
+  error = signal<string | null>(null);
+  produtos = signal<ProdutoType[]>([]);
+  produtoSelecionado = signal<string | null>(null);
+  quantidadeCarrinho = this.carrinhoService.total;
+  totalCarrinho = this.carrinhoService.total;
 
-totalProdutos = computed(() => this.produtos().length);
-
-valorTotal = computed(() => {
-return this.produtos().reduce(
-(total, item) => total + item.preco, 0);
-});
-
-subistuirProdutos(){
-this.produtos.set([
-{ nome: "Novo produto", preco: 640 }
-])};
-
+  totalProdutos = computed(() => this.produtos().length);
+  valorTotal = computed(() => {
+    return this.produtos().reduce((total, item) => total + item.preco, 5);
+  });
 
   produtosNovos = [
     { nome: 'notebook', preco: 3500 },
@@ -60,50 +47,31 @@ this.produtos.set([
     { nome: 'teclado', preco: 250.55 },
   ];
 
-  carregarProdutos(){
+  adicionarAoCarrinho(produto: ProdutoType){
+this.carrinhoService.adicionar(produto);
+  }
+
+  carregarProdutos() {
     this.error.set(null);
+    /* 
+     Modificando variavel carregando para 
+     informar que estou iniciando uma busca na API 
+    */
+    this.carregando.set(true);
 
-this.carregando.set(true);
-
-this.produtosService.buscarProdutos()
-.subscribe({
-next: (dados) => {
-const produtos = this.produtosService
-.transformarProdutos(dados);
-this.produtos.set(produtos);
-this.carregando.set(false);
-},
-error: (erro) => {
-console.error('Erro ao carregar produtos:', erro);
-this.error.set('Erro ao carregar produtos. Verifique sua conexão e tente novamente.');
-this.carregando.set(false);
-}
-});
-
-}
-
-
-//     this.http.get<{title: string, price: number; image: string}[]>(
-//       'https://fakestoreapi.com/products',
-//     ).subscribe({
-//       next: (dados) => {
-
-// // Adaptação da API para o nosso projeto
-// const produtosFormatados = dados.map(p => ({
-// nome: p.title,
-// preco: p.price
-// }));
-
-// this.produtos.set(produtosFormatados);
-// this.carregando.set(false); // finaliza loading
-// },
-
-// error: (erro) => {
-// console.error('Erro ao carregar produtos:', erro);
-// this.carregando.set(false); // evita loading infinito
-// }
-//   });
-
+    this.produtosService.buscarProdutos().subscribe({
+      next: (dados) => {
+        const produtos = this.produtosService.transformarProdutos(dados);
+        this.produtos.set(produtos);
+        this.carregando.set(false);
+      },
+      error: (erro) => {
+        console.error('Erro ao carregar produtos:', erro);
+        this.error.set('Erro ao carregar produtos. Verifique sua conexão e tente novamente.');
+        this.carregando.set(false);
+      },
+    });
+  }
 
   filtrarNovoProduto() {
     /* Esta função irá filtar a lista atual de produtos 
@@ -119,7 +87,7 @@ this.carregando.set(false);
     caso a lista de novos produtos seja menor, ele não faz nada
     */
     if (this.produtosNovos.length >= this.produtos().length) {
-      /* Retorna o item na posição atual baseada na quantidade de itens na tela
+      /* Returna o item na posição atual baseada na quantidade de itens na tela
       Se tiver 2 item na tela, ele vai pegar o terceiro item na lista de novos produtos
       */
       return this.produtosNovos[this.produtos().length];
@@ -130,7 +98,7 @@ this.carregando.set(false);
   }
 
   adicionarProduto() {
-    let novoproduto: { nome: string; preco: number } | null = this.filtrarNovoProduto();
+    let novoproduto: ProdutoType | null = this.filtrarNovoProduto();
 
     /* Caso a minha função retorne um item novo, eu adiciono na lista */
     if (novoproduto) {
@@ -139,21 +107,31 @@ this.carregando.set(false);
       /* Caso contrario, não faço nada */
     }
   }
-  
 
   exibirProduto(nome: string) {
-    this.produtosSelecionado.set(nome);
+    this.produtoSelecionado.set(nome);
     console.log('Produto selecionado é ' + nome);
   }
-  carrinho = signal<ProdutoType[]>([]);
-  quantidadeCarrinho = computed(()=> this.carrinho().length);
 
-totalCarrinho = computed(() => 
-this.carrinho().reduce((total, item) => total + item.preco, 0))
+  substituirProduto() {
+    // Desafio, atualizar somente o valor do item "notebook" sem alterar os valores de outros items
+    /* Utilizar a função "map" do javascript para percorrer a lista
+    de produtos atuais, e verificar o item com nome notebook e fazer
+    a alteração de valor */
+    const novaLista = this.produtos().map((item) => {
+      /* Verificando cada item da lista, caso o item tenha o 
+      nome diferente de notebook ele retorna o item sem alteração */
+      if (item.nome !== 'notebook') return item;
 
-adicionarAoCarrinho (produto:{nome: string, preco: number}) {
-this.carrinho.update((listaCarrinhoAtual) => [...listaCarrinhoAtual, produto]);
+      /* Caso o item tenha o nome igual a 'notebook' ele altera o
+      valor de preço e retorna o item novo com o valor alterado */
+      return {
+        ...item,
+        preco: 4000,
+      };
+    });
+
+    /* Altera a lista antiga de produtos, com a nova lista */
+    this.produtos.set(novaLista);
   }
-};
-
-
+}

@@ -4,7 +4,6 @@ import { withFetch, provideHttpClient, withInterceptors } from '@angular/common/
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { HttpInterceptor } from '@angular/common/http';
 import { httpInterceptor } from './core/interceptors/http.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -12,7 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
-    provideHttpClient(withInterceptors([httpInterceptor])),
-  ]
+    provideHttpClient(withFetch(), withInterceptors([httpInterceptor])),
+  ],
 };
