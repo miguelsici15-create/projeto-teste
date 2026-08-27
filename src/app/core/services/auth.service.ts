@@ -1,4 +1,5 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 type Usuario = {
 email: string;
 perfil: 'usuario';
@@ -7,6 +8,7 @@ perfil: 'usuario';
 providedIn: 'root',
 })
 export class AuthService {
+    private router = inject(Router);
 private usuario = signal<Usuario | null>(null);
 private tokenJwt = signal<string | null>(null);
 usuarioAtual = computed(() => this.usuario());
@@ -31,6 +33,7 @@ return true;
 logout() {
 this.usuario.set(null);
 this.tokenJwt.set(null);
+this.router.navigate(['/login']);
 }
 obterToken(): string | null {
 return this.tokenJwt();
